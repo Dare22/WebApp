@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -46,9 +47,9 @@ public class AdminController {
 	}
 
 	@ModelAttribute("type")
-	private List typeList() {
+	private List<String> typeList() {
 
-		List list = new ArrayList();
+		List<String> list = new ArrayList<String>();
 
 		list.add("admin");
 		list.add("user");
@@ -103,7 +104,7 @@ public class AdminController {
 
 	}
 
-	@RequestMapping(value = "/updateaccount", method = RequestMethod.POST)
+	@RequestMapping(value = "/edit", method = RequestMethod.POST)
 	public String updateAccount(@Valid Users users, BindingResult bindingResult,
 			final RedirectAttributes redirectAttributes) {
 
@@ -113,8 +114,9 @@ public class AdminController {
 			return "edit";
 		}
 
-		else {
+		try {
 
+			userService.update(users);
 			redirectAttributes.addFlashAttribute("css", "success");
 			redirectAttributes.addFlashAttribute("msg", "User updated successfully!"); // add
 																						// messeges
@@ -122,9 +124,13 @@ public class AdminController {
 																						// bootstrap
 																						// alert
 
+		} catch (DataIntegrityViolationException e) {
+
+			bindingResult.rejectValue("username", "DuplicateKey.users.username");
+			return "edit";
+
 		}
 
-		userService.update(users);
 		return "redirect:/admin";
 
 	}
