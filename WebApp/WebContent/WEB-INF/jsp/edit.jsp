@@ -28,7 +28,7 @@
 		<div class="container">
 			<div class="center-all">
 				<sf:form class="form-horizontal" method="post"
-					action="${pageContext.request.contextPath}/updateaccount"
+					action="${pageContext.request.contextPath}/edit"
 					commandName="users">
 
 					<sf:hidden accesskey="id" id="id" path="id" />
